@@ -5,9 +5,22 @@ import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Usuario } from './usuario/entities/usuario.entity';
 
 @Module({
-  imports: [AuthModule, UsuarioModule],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      host: 'localhost',
+      port: 27017,
+      database: 'marketing_events',
+      entities: [Usuario],
+      synchronize: true, // caution in prod
+    }),
+    AuthModule,
+    UsuarioModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

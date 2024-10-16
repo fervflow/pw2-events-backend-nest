@@ -17,11 +17,14 @@ export class UsuarioService {
   }
 
   async create(usuario: CreateUsuarioDto): Promise<Usuario> {
-    const user = this.usuarioRepository.create(usuario);
-    if (!user.id) {
-      user.id = uuidv4();
-    }
-    // const createdUser = {id: usuario.id, ...usuario};
+    // const user = this.usuarioRepository.create(usuario);
+    // if (!user.id) {
+    //   user.id = uuidv4();
+    // }
+    const user = this.usuarioRepository.create({
+      id: usuario.id ?? uuidv4(),
+      ...usuario,
+    });
     return this.usuarioRepository.save(user);
   }
 
