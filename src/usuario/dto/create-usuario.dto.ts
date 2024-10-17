@@ -1,11 +1,11 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 
 export class CreateUsuarioDto {
-  @IsNotEmpty()
-  id?: string;
+  // @IsNotEmpty()
+  // id: string;
 
   @IsNotEmpty()
-  @Length(3, 20)
+  @Length(3, 40)
   nombre: string;
 
   @IsEmail()

@@ -3,8 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsuarioService } from '../usuario/usuario.service';
 import * as bcrypt from 'bcryptjs';
 import { Usuario } from '../usuario/entities/usuario.entity';
-import { RegisterDto } from './dto/register.dto';
-// import { v4 as uuidv4 } from 'uuid';
+// import { CreateUsuarioDto } from 'src/usuario/dto/create-usuario.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,30 +22,32 @@ export class AuthService {
 
   // Generates JWT if the user is valid
   async login(user: Usuario) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = { email: user.email, sub: user._id };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
   // Registrarse
-  // async register(email: string, password: string, nombre: string, id?: string) {
-  //   const salt = await bcrypt.genSalt();
-  //   const hashedPassword = await bcrypt.hash(password, salt);
-  //   return this.usuarioService.create({
-  //     id,
-  //     email,
-  //     password: hashedPassword,
-  //     nombre,
-  //   });
-  // }
-  async register(registerDto: RegisterDto): Promise<Usuario> {
-    // const newUser = this.usuarioService.create({
-    //   ...registerDto,
-    //   id: uuidv4(),
-    // });
-    // return newUser;
-    const newUser = await this.usuarioService.create(registerDto);
-    return newUser;
+  async signup(email: string, password: string, nombre: string) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+    console.log('From AUTH SERVICE:\nemail:', email);
+    console.log('password:', password);
+    console.log('nombre:', nombre);
+    return this.usuarioService.create({
+      email,
+      password: hashedPassword,
+      nombre,
+    });
   }
+  // async register(usuarioDto: CreateUsuarioDto): Promise<Usuario> {
+  //   // const newUser = this.usuarioService.create({
+  //   //   ...registerDto,
+  //   //   id: uuidv4(),
+  //   // });
+  //   // return newUser;
+  //   const newUser = await this.usuarioService.create(usuarioDto);
+  //   return newUser;
+  // }
 }

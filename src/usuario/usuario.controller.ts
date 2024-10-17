@@ -10,6 +10,7 @@ import {
 import { UsuarioService } from './usuario.service';
 import { Usuario } from './entities/usuario.entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
+import { ObjectId } from 'typeorm';
 
 @Controller('usuarios')
 export class UsuarioController {
@@ -21,7 +22,7 @@ export class UsuarioController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: ObjectId) {
     return this.usuarioService.findOne(id);
   }
 
@@ -31,12 +32,12 @@ export class UsuarioController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() usuario: Partial<Usuario>) {
+  update(@Param('id') id: ObjectId, @Body() usuario: Partial<Usuario>) {
     return this.usuarioService.update(id, usuario);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: ObjectId) {
     return this.usuarioService.remove(id);
   }
 }

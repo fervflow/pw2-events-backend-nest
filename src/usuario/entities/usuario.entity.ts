@@ -2,7 +2,10 @@ import {
   Entity,
   Column,
   // PrimaryGeneratedColumn,
+  // ObjectIdColumn,
+  // PrimaryColumn,
   ObjectIdColumn,
+  ObjectId,
 } from 'typeorm';
 
 @Entity('usuarios')
@@ -11,7 +14,7 @@ export class Usuario {
   // id: string;
 
   @ObjectIdColumn()
-  id: string;
+  _id: ObjectId;
 
   @Column()
   nombre: string;
