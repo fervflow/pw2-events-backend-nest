@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Usuario } from './usuario/entities/usuario.entity';
 import { CategoriaModule } from './categoria/categoria.module';
 import { EventoModule } from './evento/evento.module';
+import { Categoria } from './categoria/entities/categoria.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { EventoModule } from './evento/evento.module';
       host: 'localhost',
       port: 27017,
       database: 'marketing_events',
-      entities: [Usuario],
+      entities: [Usuario, Categoria],
       synchronize: true, // caution in prod
     }),
     AuthModule,

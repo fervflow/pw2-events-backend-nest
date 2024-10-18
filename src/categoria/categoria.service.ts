@@ -1,26 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
-import { UpdateCategoriaDto } from './dto/update-categoria.dto';
+// import { UpdateCategoriaDto } from './dto/update-categoria.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Categoria } from './entities/categoria.entity';
+import { Repository } from 'typeorm';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class CategoriaService {
-  create(createCategoriaDto: CreateCategoriaDto) {
-    return 'This action adds a new categoria';
+  constructor(
+    @InjectRepository(Categoria)
+    private readonly categoriaRepository: Repository<Categoria>,
+  ) {}
+  async create(createCategoriaDto: CreateCategoriaDto) {
+    return this.categoriaRepository.save(createCategoriaDto);
   }
 
-  findAll() {
-    return `This action returns all categoria`;
+  async findAll() {
+    return this.categoriaRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} categoria`;
+  async findOne(id: string) {
+    return this.categoriaRepository.findOneBy({ _id: new ObjectId(id) });
   }
 
-  update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
-    return `This action updates a #${id} categoria`;
+  // async update(id: string, updateCategoriaDto: UpdateCategoriaDto) {
+  //   const _id = new ObjectId(id);
+  //   const upCategoria = await this.categoriaRepository.findOneBy({ _id: _id });
+  //   if (!upCategoria) {
+  //     throw new NotFoundException(`Categoria with id: ${id} not found.`);
+  //   }
+  //   Object.assign(upCategoria, updateCategoriaDto);
+  //   return this.categoriaRepository.save(upCategoria);
+  // }
+
+  // async update(id: string, categoria: Partial<Categoria>): Promise<Categoria> {
+  //   await this.categoriaRepository.update(id, categoria);
+  //   if (!(await this.findOne(id))) {
+  //     throw new NotFoundException(
+  //       `Categoria with id: ${id} not found or there were no changes.`,
+  //     );
+  //   }
+  //   return await this.findOne(id);
+  // }
+  async update(id: string, categoria: Partial<Categoria>): Promise<Categoria> {
+    const categoriaUp = await this.categoriaRepository.preload({
+      _id: new ObjectId(id),
+      ...categoria,
+    });
+
+    if (!categoriaUp) {
+      throw new NotFoundException(`Categoria with id: ${id} not found.`);
+    }
+
+    return this.categoriaRepository.save(categoriaUp);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} categoria`;
+  async remove(id: string) {
+    return this.categoriaRepository.delete(id);
   }
 }

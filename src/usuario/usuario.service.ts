@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ObjectId, Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-// import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsuarioService {
@@ -18,21 +17,8 @@ export class UsuarioService {
 
   async create(usuario: CreateUsuarioDto): Promise<Usuario> {
     const savedUser = await this.usuarioRepository.save(usuario);
-    // if (!user.id) {
-    //   user.id = uuidv4();
-    // }
-    // const user = this.usuarioRepository.create({
-    //   id: usuario.id ?? uuidv4(),
-    //   ...usuario,
-    // });
     console.log('FROM USUARIO SERVICE:');
-    // console.log('usuarioDto:', usuario);
     console.log('user:', savedUser);
-    // return this.usuarioRepository.save(savedUser);
-    // return {
-    //   ...savedUser,
-    //   _id: (savedUser._id as ObjectId).toString(),
-    // };
     return savedUser;
   }
 

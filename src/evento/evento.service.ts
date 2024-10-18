@@ -1,26 +1,72 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEventoDto } from './dto/create-evento.dto';
-import { UpdateEventoDto } from './dto/update-evento.dto';
+import { Evento } from './entities/evento.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ObjectId } from 'mongodb';
+import { Categoria } from 'src/categoria/entities/categoria.entity';
 
 @Injectable()
 export class EventoService {
-  create(createEventoDto: CreateEventoDto) {
-    return 'This action adds a new evento';
+  constructor(
+    @InjectRepository(Evento)
+    private readonly eventoRepository: Repository<Evento>,
+    @InjectRepository(Categoria)
+    private readonly categoriaRepository: Repository<Categoria>,
+  ) {}
+  async create(createEventoDto: CreateEventoDto) {
+    const categoria = await this.categoriaRepository.findOneBy({
+      _id: new ObjectId(createEventoDto.categoriaId),
+    });
+
+    if (!categoria) {
+      throw new NotFoundException(
+        `Categoria: ${createEventoDto.categoriaId} not found`,
+      );
+    }
+
+    const newEvento = this.eventoRepository.create({
+      ...createEventoDto,
+      categoria,
+    });
+    return this.eventoRepository.save(newEvento);
   }
 
-  findAll() {
-    return `This action returns all evento`;
+  async findAll() {
+    return this.eventoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} evento`;
+  async findOne(id: string) {
+    const evento = await this.eventoRepository.findOneBy({ _id: id });
+    if (!evento) {
+      throw new NotFoundException(`Evento with id: ${id} not found.`);
+    }
+    return this.eventoRepository.save(evento);
   }
 
-  update(id: number, updateEventoDto: UpdateEventoDto) {
-    return `This action updates a #${id} evento`;
+  async update(id: string, evento: Partial<CreateEventoDto>) {
+    const eventoUpdate = await this.eventoRepository.preload({
+      _id: new ObjectId(id),
+      ...evento,
+    });
+    if (!eventoUpdate) {
+      throw new NotFoundException(`Evento with id: ${id} not found.`);
+    }
+    if (evento.categoriaId) {
+      const categoria = await this.categoriaRepository.findOneBy({
+        _id: new ObjectId(id),
+      });
+      if (!categoria) {
+        throw new NotFoundException(
+          `Categoria with id: ${evento.categoriaId} not found.`,
+        );
+      }
+      eventoUpdate.categoria = categoria;
+    }
+    return this.eventoRepository.save(eventoUpdate);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} evento`;
+  async remove(id: string) {
+    return this.eventoRepository.delete(id);
   }
 }

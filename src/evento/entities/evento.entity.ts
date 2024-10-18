@@ -1,10 +1,10 @@
-import { Entity, Column, ManyToOne, ObjectIdColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, ObjectIdColumn, ObjectId } from 'typeorm';
 import { Categoria } from '../../categoria/entities/categoria.entity';
 
 @Entity('eventos')
 export class Evento {
   @ObjectIdColumn()
-  id: string;
+  _id: string | ObjectId;
 
   @Column()
   nombre: string;
@@ -18,6 +18,7 @@ export class Evento {
   @Column('decimal')
   precio: number;
 
-  @ManyToOne(() => Categoria, (categoria) => categoria.id)
+  // @ManyToOne(() => Categoria, (categoria) => categoria._id)
+  @ManyToOne(() => Categoria)
   categoria: Categoria;
 }
