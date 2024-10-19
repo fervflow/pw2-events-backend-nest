@@ -21,39 +21,19 @@ export class CategoriaService {
   }
 
   async findOne(id: string) {
-    return this.categoriaRepository.findOneBy({ _id: new ObjectId(id) });
-  }
-
-  // async update(id: string, updateCategoriaDto: UpdateCategoriaDto) {
-  //   const _id = new ObjectId(id);
-  //   const upCategoria = await this.categoriaRepository.findOneBy({ _id: _id });
-  //   if (!upCategoria) {
-  //     throw new NotFoundException(`Categoria with id: ${id} not found.`);
-  //   }
-  //   Object.assign(upCategoria, updateCategoriaDto);
-  //   return this.categoriaRepository.save(upCategoria);
-  // }
-
-  // async update(id: string, categoria: Partial<Categoria>): Promise<Categoria> {
-  //   await this.categoriaRepository.update(id, categoria);
-  //   if (!(await this.findOne(id))) {
-  //     throw new NotFoundException(
-  //       `Categoria with id: ${id} not found or there were no changes.`,
-  //     );
-  //   }
-  //   return await this.findOne(id);
-  // }
-  async update(id: string, categoria: Partial<Categoria>): Promise<Categoria> {
-    const categoriaUp = await this.categoriaRepository.preload({
+    const categoria = await this.categoriaRepository.findOneBy({
       _id: new ObjectId(id),
-      ...categoria,
     });
-
-    if (!categoriaUp) {
+    if (!categoria) {
       throw new NotFoundException(`Categoria with id: ${id} not found.`);
     }
+    return categoria;
+  }
 
-    return this.categoriaRepository.save(categoriaUp);
+  async update(id: string, categoria: Partial<Categoria>): Promise<Categoria> {
+    const categoriaUpdate = await this.findOne(id);
+    Object.assign(categoriaUpdate, categoria);
+    return this.categoriaRepository.save(categoriaUpdate);
   }
 
   async remove(id: string) {

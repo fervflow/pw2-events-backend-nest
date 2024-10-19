@@ -1,10 +1,12 @@
-import { Entity, Column, ObjectIdColumn, ObjectId } from 'typeorm';
+import { Entity, Column, ObjectIdColumn } from 'typeorm';
+import { ObjectId } from 'mongodb';
 
 @Entity('categorias')
 export class Categoria {
   @ObjectIdColumn()
-  _id: string | ObjectId;
+  _id: ObjectId;
 
-  @Column({ unique: true })
+  // @Column({ unique: true })
+  @Column()
   nombre: string;
 }

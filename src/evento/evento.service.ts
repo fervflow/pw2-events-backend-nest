@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ObjectId } from 'mongodb';
 import { Categoria } from 'src/categoria/entities/categoria.entity';
+import { CategoriaService } from 'src/categoria/categoria.service';
 
 @Injectable()
 export class EventoService {
@@ -12,58 +13,59 @@ export class EventoService {
     @InjectRepository(Evento)
     private readonly eventoRepository: Repository<Evento>,
     @InjectRepository(Categoria)
-    private readonly categoriaRepository: Repository<Categoria>,
+    private readonly categoriaService: CategoriaService,
   ) {}
   async create(createEventoDto: CreateEventoDto) {
-    const categoria = await this.categoriaRepository.findOneBy({
-      _id: new ObjectId(createEventoDto.categoriaId),
-    });
-
-    if (!categoria) {
-      throw new NotFoundException(
-        `Categoria: ${createEventoDto.categoriaId} not found`,
-      );
-    }
-
+    const categoria = await this.categoriaService.findOne(
+      createEventoDto.categoriaId,
+    );
     const newEvento = this.eventoRepository.create({
       ...createEventoDto,
-      categoria,
+      categoriaId: categoria._id,
     });
-    return this.eventoRepository.save(newEvento);
+    await this.eventoRepository.save(newEvento);
+    return this.eventoWithCategoria(newEvento, categoria);
   }
 
   async findAll() {
-    return this.eventoRepository.find();
+    const eventos = await this.eventoRepository.find();
+    const eventosWithCategoria = [];
+    for (const evento of eventos) {
+      eventosWithCategoria.push(await this.eventoWithCategoria(evento));
+    }
+    return eventosWithCategoria;
   }
 
   async findOne(id: string) {
-    const evento = await this.eventoRepository.findOneBy({ _id: id });
+    const evento = await this.eventoRepository.findOneBy({
+      _id: new ObjectId(id),
+    });
     if (!evento) {
       throw new NotFoundException(`Evento with id: ${id} not found.`);
     }
-    return this.eventoRepository.save(evento);
+    return evento;
+  }
+
+  async findOneWithCategoria(id: string) {
+    const evento = await this.findOne(id);
+    return this.eventoWithCategoria(evento);
+  }
+
+  private async eventoWithCategoria(evento: Evento, cat?: Categoria) {
+    const { categoriaId, ...eventoWithoutCategoria } = evento;
+    const categoria =
+      cat ?? (await this.categoriaService.findOne(categoriaId.toString()));
+    return { ...eventoWithoutCategoria, categoria };
   }
 
   async update(id: string, evento: Partial<CreateEventoDto>) {
-    const eventoUpdate = await this.eventoRepository.preload({
-      _id: new ObjectId(id),
-      ...evento,
-    });
-    if (!eventoUpdate) {
-      throw new NotFoundException(`Evento with id: ${id} not found.`);
-    }
-    if (evento.categoriaId) {
-      const categoria = await this.categoriaRepository.findOneBy({
-        _id: new ObjectId(id),
-      });
-      if (!categoria) {
-        throw new NotFoundException(
-          `Categoria with id: ${evento.categoriaId} not found.`,
-        );
-      }
-      eventoUpdate.categoria = categoria;
-    }
-    return this.eventoRepository.save(eventoUpdate);
+    const eventoUpdate = await this.findOne(id);
+    const categoria = await this.categoriaService.findOne(
+      evento.categoriaId ?? eventoUpdate.categoriaId.toString(),
+    );
+    Object.assign(eventoUpdate, evento);
+    this.eventoRepository.save(eventoUpdate);
+    return this.eventoWithCategoria(eventoUpdate, categoria);
   }
 
   async remove(id: string) {

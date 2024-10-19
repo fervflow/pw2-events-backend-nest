@@ -1,4 +1,10 @@
-import { IsDateString, IsNotEmpty, IsNumber, Length } from 'class-validator';
+import {
+  IsDateString,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  Length,
+} from 'class-validator';
 
 export class CreateEventoDto {
   @Length(4, 64)
@@ -14,6 +20,6 @@ export class CreateEventoDto {
   @IsNumber()
   precio: number;
 
-  @IsNotEmpty()
+  @IsMongoId()
   categoriaId: string;
 }

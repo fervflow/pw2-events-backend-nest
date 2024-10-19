@@ -2,8 +2,6 @@ import {
   Entity,
   Column,
   // PrimaryGeneratedColumn,
-  // ObjectIdColumn,
-  // PrimaryColumn,
   ObjectIdColumn,
   ObjectId,
 } from 'typeorm';

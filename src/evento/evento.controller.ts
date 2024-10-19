@@ -27,7 +27,7 @@ export class EventoController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.eventoService.findOne(id);
+    return this.eventoService.findOneWithCategoria(id);
   }
 
   @Patch(':id')

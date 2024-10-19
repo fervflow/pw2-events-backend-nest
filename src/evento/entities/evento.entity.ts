@@ -1,10 +1,10 @@
-import { Entity, Column, ManyToOne, ObjectIdColumn, ObjectId } from 'typeorm';
-import { Categoria } from '../../categoria/entities/categoria.entity';
+import { ObjectId } from 'mongodb';
+import { Entity, Column, ObjectIdColumn } from 'typeorm';
 
 @Entity('eventos')
 export class Evento {
   @ObjectIdColumn()
-  _id: string | ObjectId;
+  _id: ObjectId;
 
   @Column()
   nombre: string;
@@ -18,7 +18,11 @@ export class Evento {
   @Column('decimal')
   precio: number;
 
+  @Column()
+  categoriaId: ObjectId;
+
   // @ManyToOne(() => Categoria, (categoria) => categoria._id)
-  @ManyToOne(() => Categoria)
-  categoria: Categoria;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // @Column((type) => Categoria)
+  // categoria: Categoria;
 }
