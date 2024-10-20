@@ -17,7 +17,7 @@ export class EventoService {
   ) {}
   async create(createEventoDto: CreateEventoDto) {
     const categoria = await this.categoriaService.findOne(
-      createEventoDto.categoriaId,
+      createEventoDto.categoriaId.toString(),
     );
     const newEvento = this.eventoRepository.create({
       ...createEventoDto,
@@ -51,7 +51,7 @@ export class EventoService {
     return this.eventoWithCategoria(evento);
   }
 
-  private async eventoWithCategoria(evento: Evento, cat?: Categoria) {
+  async eventoWithCategoria(evento: Evento, cat?: Categoria) {
     const { categoriaId, ...eventoWithoutCategoria } = evento;
     const categoria =
       cat ?? (await this.categoriaService.findOne(categoriaId.toString()));
@@ -59,11 +59,13 @@ export class EventoService {
   }
 
   async update(id: string, evento: Partial<CreateEventoDto>) {
+    const { categoriaId, ..._evento } = evento;
     const eventoUpdate = await this.findOne(id);
     const categoria = await this.categoriaService.findOne(
-      evento.categoriaId ?? eventoUpdate.categoriaId.toString(),
+      categoriaId ?? eventoUpdate._id.toString(),
     );
-    Object.assign(eventoUpdate, evento);
+    if (categoriaId) eventoUpdate.categoriaId = new ObjectId(categoriaId);
+    Object.assign(eventoUpdate, _evento);
     this.eventoRepository.save(eventoUpdate);
     return this.eventoWithCategoria(eventoUpdate, categoria);
   }
