@@ -23,7 +23,7 @@ export class UsuarioService {
     return savedUser;
   }
 
-  async findOne(id: ObjectId): Promise<Usuario> {
+  async findOne(id: string): Promise<Usuario> {
     console.log('usuarioService\nfindOne:', id);
     return this.usuarioRepository.findOneBy({ _id: new ObjectId(id) });
   }
@@ -32,12 +32,12 @@ export class UsuarioService {
     return this.usuarioRepository.findOneBy({ email });
   }
 
-  async update(id: ObjectId, usuario: Partial<Usuario>): Promise<Usuario> {
+  async update(id: string, usuario: Partial<Usuario>): Promise<Usuario> {
     await this.usuarioRepository.update(id, usuario);
     return this.findOne(id);
   }
 
-  async remove(id: ObjectId): Promise<void> {
+  async remove(id: string): Promise<void> {
     await this.usuarioRepository.delete(id);
   }
 }

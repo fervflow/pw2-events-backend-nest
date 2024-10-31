@@ -10,6 +10,7 @@ import { CategoriaModule } from './categoria/categoria.module';
 import { EventoModule } from './evento/evento.module';
 import { PublicacionModule } from './publicacion/publicacion.module';
 import { ClienteModule } from './cliente/cliente.module';
+import { VentaModule } from './venta/venta.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ClienteModule } from './cliente/cliente.module';
     EventoModule,
     PublicacionModule,
     ClienteModule,
+    VentaModule,
   ],
   controllers: [AppController],
   providers: [
