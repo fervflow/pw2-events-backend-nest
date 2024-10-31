@@ -1,17 +1,20 @@
 import { ObjectId } from 'mongodb';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 
-@Entity('publicaciones')
-export class Publicacion {
+@Entity('clientes')
+export class Cliente {
   @ObjectIdColumn()
   _id: ObjectId;
 
   @Column()
-  fecha_publicacion: Date;
+  nombres: string;
 
   @Column()
-  descripcion: string;
+  apellidos: string;
 
   @Column()
-  eventoId: ObjectId;
+  telefono: string;
+
+  @Column()
+  email: string;
 }

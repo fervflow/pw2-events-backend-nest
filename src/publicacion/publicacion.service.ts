@@ -28,12 +28,12 @@ export class PublicacionService {
     await this.publicacionRepository.save(newPublicacion);
     return this.publicacionWithEvento(newPublicacion, evento);
   }
-  async publicacionWithEvento(publicacion: Publicacion, evento?: Evento) {
+  async publicacionWithEvento(publicacion: Publicacion, _evento?: Evento) {
     const { eventoId, ...publicacionNoEvento } = publicacion;
-    const _evento = evento
-      ? await this.eventoService.eventoWithCategoria(evento)
+    const evento = _evento
+      ? await this.eventoService.eventoWithCategoria(_evento)
       : await this.eventoService.findOneWithCategoria(eventoId.toString());
-    return { ...publicacionNoEvento, _evento };
+    return { ...publicacionNoEvento, evento };
   }
 
   async findAll() {
